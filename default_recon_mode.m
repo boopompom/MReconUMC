@@ -2,14 +2,16 @@
 %% Setup path and select root of data
 clear all;clc;clear classes;close all;restoredefaultpath
 addpath(genpath(pwd))
+addpath(genpath('../MRecon-3.0.552/'))
 root='/local_scratch/tbruijne/WorkingData/FIM/';
-scan=2;
+%root='/local_scratch/tbruijne/WorkingData/4DGA/';
+scan=1;
 
 %%
 clear MR
 MR=MReconUMC(root,scan);
-MR.Parameter.Parameter2Read.ky=MR.Parameter.Parameter2Read.ky(1:500);
-MR.Parameter.Parameter2Read.chan=MR.Parameter.Parameter2Read.chan([15]);
+%MR.Parameter.Parameter2Read.ky=MR.Parameter.Parameter2Read.ky(1:500);
+MR.Parameter.Parameter2Read.chan=MR.Parameter.Parameter2Read.chan(5);
 %MR.UMCParameters.Operators.Niter=2;
 %MR.UMCParameters.AdjointReconstruction.PrototypeMode=5;
 %MR.UMCParameters.SystemCorrections.NoisePreWhitening='yes';
