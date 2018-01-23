@@ -1,7 +1,5 @@
 function set_geometry_parameters( MR )
-% In the future change
-% MR.UMCParameters.AdjointReconstruction.SpatialResolutionRatio to an
-% array.
+% In the future change 
 
 % Get dimensions for data handling
 dims=cellfun(@size,MR.Data,'UniformOutput',false);num_data=numel(dims);
