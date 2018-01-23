@@ -15,14 +15,14 @@ respdata=permute(reshape(permute(MR.Data{1}(dims(1)/2+1,:,:,:,:,:,:,:,:,:,:,:),[
 % Extract respiratory signal from first echo and first data chunk
 respiration=extract_resp_signal(squeeze(respdata));
 
-% Get median navigator and calc difference for each projection
+% Get mean navigator and calc difference for each projection
 midp=mean(respiration,1)';
 for n=1:numel(respiration)
     d(n)=abs(midp-respiration(n));end
 
 % Translate this distance to a data consistency weight
-c1=.08; % Threshold to do nothing
-c2=5; % Parametrize exponential function
+c1=prctile(d,55); % Threshold to do nothing
+c2(t)=optimize_sgw(d,MR.UMCParameters.AdjointReconstruction.IspaceSize{1}(1),c1); % Parametrize exponential function automatically
 for n=1:numel(respiration)
     if d(n)<= c1
         soft_weights(n)=1;
