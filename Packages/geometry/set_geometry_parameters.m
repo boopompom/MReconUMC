@@ -24,7 +24,7 @@ else
    [tmp_z,idx]=max(MR.Parameter.Scan.RecVoxelSize);
    MR.Parameter.Scan.RecVoxelSize=repmat(MR.UMCParameters.AdjointReconstruction.SpatialResolution,[3 1])';
    MR.Parameter.Scan.RecVoxelSize(idx)=tmp_z;
-   MR.UMCParameters.AdjointReconstruction.SpatialResolutionRatio=min(MR.Parameter.Scan.RecVoxelSize)/min(MR.Parameter.Scan.AcqVoxelSize);
+   MR.UMCParameters.AdjointReconstruction.SpatialResolutionRatio=min(MR.Parameter.Scan.RecVoxelSize([1:idx-1 idx+1:3]))/min(MR.Parameter.Scan.AcqVoxelSize);
 end
 
 % If 2D create Zres = 1 
