@@ -5,17 +5,17 @@ addpath(genpath(pwd))
 addpath(genpath('../MRecon-3.0.552/'))
 root='/local_scratch/tbruijne/WorkingData/FIM/';
 %root='/local_scratch/tbruijne/WorkingData/4DGA/';
-scan=1;
+scan=6;
 
 %%
 clear MR
 MR=MReconUMC(root,scan);
-%MR.Parameter.Parameter2Read.ky=MR.Parameter.Parameter2Read.ky(1:500);
-MR.Parameter.Parameter2Read.chan=MR.Parameter.Parameter2Read.chan(5);
+MR.Parameter.Parameter2Read.ky=MR.Parameter.Parameter2Read.ky(1:400);
+%MR.Parameter.Parameter2Read.chan=MR.Parameter.Parameter2Read.chan(5);
 %MR.UMCParameters.Operators.Niter=2;
 %MR.UMCParameters.AdjointReconstruction.PrototypeMode=5;
 %MR.UMCParameters.SystemCorrections.NoisePreWhitening='yes';
-%MR.UMCParameters.AdjointReconstruction.CoilSensitivityMaps='walsh';
+MR.UMCParameters.AdjointReconstruction.CoilSensitivityMaps='refscan';
 %MR.UMCParameters.AdjointReconstruction.LoadCoilSensitivityMaps='yes';
 %MR.UMCParameters.IterativeReconstruction.PotentialFunction=1;
 %MR.Parameter.Recon.ArrayCompression='yes';
@@ -34,7 +34,7 @@ MR.UMCParameters.IterativeReconstruction.SplitDimension=3;
 %MR.UMCParameters.AdjointReconstruction.R=2;
 %MR.UMCParameters.GeneralComputing.ParallelComputing='yes';
 %MR.UMCParameters.SystemCorrections.PhaseCorrection='girf';
-%MR.UMCParameters.AdjointReconstruction.SpatialResolution=3; 
+MR.UMCParameters.AdjointReconstruction.SpatialResolution=3; 
 %MR.UMCParameters.AdjointReconstruction.IterativeDensityEstimation='yes';
 % MR.UMCParameters.SystemCorrections.Girf='yes';
 % MR.UMCParameters.SystemCorrections.GirfNominalTrajectory='yes';

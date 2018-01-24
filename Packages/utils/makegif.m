@@ -26,7 +26,7 @@ for j=1:size(img,3);
     end
 
     set(gcf,'Color','k');
-    pause(1);
+    pause(.2);
     A = getframe();
     im=frame2im(A);
     [A,map]=rgb2ind(im,256);

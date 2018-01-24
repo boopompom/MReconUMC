@@ -34,12 +34,12 @@ S.Smooth=1;
 S.Extrapolate=1;
 S.MatchTargetSize=1;
 S.RemoveMOversampling=1;
-S.OutputSizeSensitivity=[MR.UMCParameters.AdjointReconstruction.IspaceSize{1}(1:3),1];
-S.OutputSizeReformated=[MR.UMCParameters.AdjointReconstruction.IspaceSize{1}(1:3),1];
+S.OutputSizeSensitivity=[MR.Parameter.Gridder.OutputMatrixSize{1}(1:3),1];
+S.OutputSizeReformated=[MR.Parameter.Gridder.OutputMatrixSize{1}(1:3),1];
 S.Perform;
 
 % Save the coil maps after they are normalized
-csm=flipud(S.Sensitivity);
+csm=S.Sensitivity;
 if size(csm) > 3
     csm=flip(csm,3);
 end

@@ -12,7 +12,7 @@ dims(3)=MR.UMCParameters.AdjointReconstruction.IspaceSize{n}(3);
 
 % Count number of elements in MR.Data. If its larger then 10^8 use a less
 % memory intensive method
-if numel(MR.Data{n})>2*10^9
+if numel(MR.Data{n})>5*10^8
     inst=1;
 else
     inst=0;
