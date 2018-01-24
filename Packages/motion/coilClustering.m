@@ -1,5 +1,3 @@
-% Zhang_2015_Robust self-navigated body MRI using dense coil arrays
-
 function [dave, coilID] = coilClustering(d1, thresh)
  
 % Coil clustering
@@ -17,7 +15,7 @@ function [dave, coilID] = coilClustering(d1, thresh)
 [nviews, nc] = size(d1);
 
 % find out the covariance matrix between coils
-% disp('Calculating covariance matrix...');
+disp('Calculating covariance matrix...');
 corrm = zeros(nc,nc);
 
 for i = 1 : nc
@@ -27,9 +25,7 @@ for i = 1 : nc
 	end
 end
 
-
-xycov = xcorr(bsxfun(@minus, d1(:,i), mean(d1(:,i))), bsxfun(@minus, d1(:,j), mean(d1(:,j))), 0, 'coef'); 
-% disp('Spectral clustering...');
+disp('Spectral clustering...');
 % set a mask according to this value
 mask = zeros(nc,nc);
 mask(abs(corrm)>thresh) = 1;
@@ -63,3 +59,4 @@ for c = 1:nc
 end
 
 dave = dave./sum(subgroup);
+

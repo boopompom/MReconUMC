@@ -7,7 +7,7 @@ function c2 = optimize_sgw(d,M,c1)
 sgw=0:.001:5;
 
 for n=1:numel(sgw)
-    score(:,n)=exp(-sgw(n).*abs(d));
+    score(:,n)=exp(-sgw(n).*(abs(d)-c1));
     score(find(abs(d)<c1),n)=1;        
 end
 score=abs(M*pi/2-sum(score,1));

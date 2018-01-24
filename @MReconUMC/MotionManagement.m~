@@ -21,13 +21,13 @@ for n=1:numel(respiration)
     d(n)=abs(midp-respiration(n));end
 
 % Translate this distance to a data consistency weight
-c1=prctile(d,10); % Threshold to do nothing
+c1=prctile(d,55); % Threshold to do nothing
 c2=optimize_sgw(d,MR.UMCParameters.AdjointReconstruction.IspaceSize{1}(1),c1); % Parametrize exponential function automatically
 for n=1:numel(respiration)
     if d(n)<= c1
         soft_weights(n)=1;
     else
-        soft_weights(n)=exp(-c2*(d(n)-c1));
+        soft_weights(n)=exp(-c2*d(n));
     end
 end
 
@@ -36,26 +36,3 @@ MR.UMCParameters.AdjointReconstruction.SoftWeights=reshape(soft_weights,[1 dims(
 
 % END
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

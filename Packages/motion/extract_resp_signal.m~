@@ -17,27 +17,25 @@ for c=1:nc
     end    
 end
 
-%% Moving average method
-% % Get mean navigator
-% avg_nav=squeeze(mean(nav,1));
-% 
-% % Calculate distance from the mean for each projections
-% d=[];F=@(xx)(ifftshift(fft(fftshift(xx))));
-% for c=1:nc
-%     for t=1:ntviews
-%         tmp=angle(F(abs(avg_nav(:,c)))'.*conj(F(abs(squeeze(nav(t,:,c))))));
-%         %subplot(211);plot(squeeze(nav(t,:,c)));subplot(212);plot(tmp);pause();
-%         supp=round(numel(tmp)/2)-1:ceil(numel(tmp)/2)+1;
-%         slope=tmp(supp(3))-tmp(supp(1))/2;
-%         d(t,c)=slope*(nz/4)/(2*pi);
-%     end
-% end
-% 
-% % Filter angular dependency
-% %d=angular_dependency_filter(d);
-% d=moving_average_filter(d,9);
+% Get mean navigator
+avg_nav=squeeze(mean(nav,1));
 
-%% PCA method
+% Calculate distance from the mean for each projections
+d=[];F=@(xx)(ifftshift(fft(fftshift(xx))));
+for c=1:nc
+    for t=1:ntviews
+        tmp=angle(F(abs(avg_nav(:,c)))'.*conj(F(abs(squeeze(nav(t,:,c))))));
+        %subplot(211);plot(squeeze(nav(t,:,c)));subplot(212);plot(tmp);pause();
+        supp=round(numel(tmp)/2)-1:ceil(numel(tmp)/2)+1;
+        slope=tmp(supp(3))-tmp(supp(1))/2;
+        d(t,c)=slope*(nz/4)/(2*pi);
+    end
+end
+
+% Filter angular dependency
+%d=angular_dependency_filter(d);
+d=moving_average_filter(d,9);
+
 kk=1; 
 for c=1:nc
     tmp=permute(nav(:,:,c),[2 3 1]);
@@ -57,15 +55,15 @@ for c=1:nc
         %Normalize the signal for display
         tmp3=tmp3-min(tmp3(:));
         tmp3=tmp3./max(tmp3(:));
-        d(:,kk)=tmp3;
+        d2(:,kk)=tmp3;
         kk=kk+1;
     end
 end 
 
-%% Do coil clusting to find the respiratory motion signal
+% Do coil clusting to find the respiratory motion signal
 % Function obtained from Tao Zhang (http://web.stanford.edu/~tzhang08/software.html)
 thresh=0.95;
-[respiration, ~]=coilClustering(d,thresh);
+[respiration, ~]=coilClustering(d2,thresh);
 
 %Normalize the signal for display
 respiration=respiration-min(respiration(:));
