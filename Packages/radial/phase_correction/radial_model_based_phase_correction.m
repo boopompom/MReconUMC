@@ -9,6 +9,7 @@ end
 
 % Get dimensions for data handling
 dims=MR.UMCParameters.AdjointReconstruction.KspaceSize{n};
+dims(3)=MR.UMCParameters.AdjointReconstruction.IspaceSize{n}(3);
 
 % Count number of elements in MR.Data. If its larger then 10^8 use a less
 % memory intensive method

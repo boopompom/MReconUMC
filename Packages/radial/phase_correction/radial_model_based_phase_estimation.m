@@ -9,6 +9,7 @@ end
 
 % Get dimensions for data handling
 dims=MR.UMCParameters.AdjointReconstruction.KspaceSize{n};
+dims(3)=MR.UMCParameters.AdjointReconstruction.IspaceSize{n}(3);
 
 % Preallocate model parameter matrix
 model_parameters=zeros([2 dims(3:end)]);

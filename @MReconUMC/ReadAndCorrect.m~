@@ -63,7 +63,6 @@ data=cat(2,data{:});
 MR.Data=reshape(data,[size(data,1),size(data,2)*size(data,3)]);
 
 % Change labels
-MR.Parameter.LabelLookupTable=numel(ch_idx)+(1:size(MR.Data,2));
 
 %% Display
 % Notification

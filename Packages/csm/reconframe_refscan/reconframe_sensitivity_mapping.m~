@@ -56,7 +56,7 @@ end
 MR.Parameter.Recon.Sensitivities=csm;
 
 % Define sensitivity operator
-MR.UMCParameters.Operators.S=CC({MR.Parameter.Recon.Sensitivities});
+MR.UMCParameters.Operators.S=CC(MR.Parameter.Recon.Sensitivities);
 
 %% Display
 % Notification

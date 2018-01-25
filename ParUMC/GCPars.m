@@ -6,6 +6,7 @@ classdef GCPars < dynamicprops & deepCopyable
 
 %% Parameters that are adjustable at configuration
 properties
+    Chunks % |Integer| Number of data chunks to split recon steps
     NumberOfCPUs % |Integer| Number of available cpus
     ParallelComputing % |YesNo| 
 end
@@ -25,6 +26,7 @@ methods
         GC.PermanentWorkingDirectory='';
         GC.DataRoot='';
         GC.TemporateWorkingDirectory='';
+        GC.Chunks=1;
     end
 end
 
