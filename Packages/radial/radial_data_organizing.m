@@ -2,7 +2,7 @@ function radial_data_organizing( MR )
 % Function to organize in particular golden angle radial data
 
 % Logic
-if ~strcmpi(MR.Parameter.Scan.AcqMode,'Radial') || strcmpi(MR.UMCParameters.Fingerprinting.Fingerprinting,'yes')
+if ~strcmpi(MR.Parameter.Scan.AcqMode,'Radial') 
 	return;end
 
 % Remove calibration lines from all echos
@@ -20,12 +20,14 @@ if MR.UMCParameters.AdjointReconstruction.Goldenangle > 0
 	 % Reorganize dynamics and ky dimensions due to the continues acquisition scheme and do undersampling (R)
 	 for n=1:num_data;dims{n}(5)=floor(MR.Parameter.Encoding.NrDyn*MR.UMCParameters.AdjointReconstruction.R);
      	dims{n}(2)=floor(dims{n}(2)/dims{n}(5)); % number of lines per dynamic
-     	MR.Data{n}=MR.Data{n}(:,1:dims{n}(5)*dims{n}(2),:,:,:,:,:,:,:,:,:);end 
+     	MR.Data{n}(:,dims{n}(5)*dims{n}(2)+1:end,:,:,:,:,:,:,:,:,:)=[];end 
 
      % Sort data in dynamics
-     for n=1:num_data;MR.Data{n}=permute(reshape(permute(MR.Data{n},[1 3 4 6 7 8 9 10 11 12 2 5]),...
-             [dims{n}(1) dims{n}(3) dims{n}(4) dims{n}(6:12) dims{n}(2) dims{n}(5)]),[1 11 2 3 12 4:10]);end
-          
+     for n=1:num_data;
+         MR.Data{n}=permute(MR.Data{n},[1 3 4 6 7 8 9 10 11 12 2 5]);
+         MR.Data{n}=reshape(MR.Data{n},[dims{n}(1) dims{n}(3) dims{n}(4) dims{n}(6:12) dims{n}(2) dims{n}(5)]);
+         MR.Data{n}=permute(MR.Data{n},[1 11 2 3 12 4:10]);end
+
      % Alternating is no, hardcoded in ppe
      MR.Parameter.Gridder.AlternatingRadial='no';
 end

@@ -15,9 +15,6 @@ end
 %% Hidden branches, dont need modification from configure file
 properties ( Hidden )
     ReconFlags
-    Operators
-    Fingerprinting
-    Simulation
 end
 
 %% Set default values
@@ -28,9 +25,6 @@ methods
         UMCParameters.AdjointReconstruction=ARPars();
         UMCParameters.IterativeReconstruction=IRPars();
         UMCParameters.ReconFlags=RFPars();
-        UMCParameters.Operators=Operators();
-        UMCParameters.Simulation=SIMPars();
-        UMCParameters.Fingerprinting=MRFPars();
     end
 end
 

@@ -15,8 +15,7 @@ dims=MR.UMCParameters.AdjointReconstruction.KspaceSize;
 num_data=numel(dims);
 for n=1:num_data;cp{n}=dims{n}(1)/2+1;end % k0
 
-for n=1:num_data;
-    
+for n=1:num_data;    
     % Create a Ram-Lak filter
     w{n}=ones(dims{n}(1),1);
     w{n}=abs(MR.Parameter.Gridder.Kpos{n}(1,:,1,1,1,1,1,1,1,1,1,1));
@@ -28,7 +27,7 @@ for n=1:num_data;
     
 end
 
-if strcmpi(MR.UMCParameters.AdjointReconstruction.NufftType,'3D')
+if MR.UMCParameters.IterativeReconstruction.SplitDimension==3;
     for n=1:num_data
         w{n}=repmat(w{n},[1 1 dims{1}(3) 1 1 1 1 1 1 1 1 1]);
     end

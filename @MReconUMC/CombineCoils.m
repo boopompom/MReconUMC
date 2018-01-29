@@ -5,25 +5,16 @@ function CombineCoils( MR )
 %
 % 20170717 - T.Bruijnen
 
-%% Logic and display
+% Logic and display
 if strcmp(MR.Parameter.Recon.CoilCombination,'no') || MR.Parameter.ReconFlags.iscombined;
     return;end
 
-%% CombineCoils
-if isempty(MR.UMCParameters.Operators.S)
+% Notification
+fprintf('Combining receiver coils (sos) ...................  ');tic;
 
-    % Notification
-    fprintf('Combining receiver coils (sos) ...................  ');tic;
-
-    % If data is not single make single
-    MR.Data=cellfun(@(x) single(x),MR.Data,'UniformOutput',false);
-    CombineCoils@MRecon(MR);
-
-else
-    % Notification
-    fprintf('Combining receiver coils (Roemer) ................  ');tic;
-    MR.Data=MR.UMCParameters.Operators.S*MR.Data;
-end
+% If data is not single make single
+MR.Data=cellfun(@(x) single(x),MR.Data,'UniformOutput',false);
+CombineCoils@MRecon(MR);
 
 %% Display and reconstruction flags
 % Notification

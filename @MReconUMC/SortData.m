@@ -8,18 +8,11 @@ function SortData( MR )
 % kx/x=trajectory or spatial dimensions, c=coils, dyn=dynamics, ph=phases(flow),
 % ech=mulitple echoes, mix = ?, loc=locations, ex1=?, ex2=?, avg=averages.
 %
-% 20170717 - T.Bruijnen
-
-%% Logic & display
-% If simulation mode is activated this is not required
-if strcmpi(MR.UMCParameters.Simulation.Simulation,'yes')
-    return;
-end
+% V20180129 - T.Bruijnen
 
 % Notification
 fprintf('Sorting imaging and calibration data..............  ');tic
 
-%% SortData
 % Run Sort from MRecon
 SortData@MRecon(MR);
 
@@ -30,18 +23,12 @@ end
 
 % Radial specific data organizing steps
 radial_data_organizing(MR);
-
-% Fingerprinting specific data organizing steps
-fingerprinting_data_organizing(MR);
-
-% EPI reorganizing phase encode lines
-epi_data_organizing(MR);
     
 % Prototype mode to reduce number of dynamics retrospectively
 if MR.UMCParameters.AdjointReconstruction.PrototypeMode~=0
     num_data=numel(MR.Data);
     for n=1:num_data;MR.Data{n}=MR.Data{n}(:,:,:,:,1:MR.UMCParameters.AdjointReconstruction.PrototypeMode,:,:,:,:,:,:,:);end
-    MR.Parameter.Encoding.NrDyn=MR.UMCParameters.AdjointReconstruction.PrototypeMode;
+            MR.Parameter.Encoding.NrDyn=MR.UMCParameters.AdjointReconstruction.PrototypeMode;
     for n=1:num_data;MR.UMCParameters.AdjointReconstruction.KspaceSize{n}(5)=MR.Parameter.Encoding.NrDyn;...
             MR.UMCParameters.AdjointReconstruction.IspaceSize{n}(5)=MR.Parameter.Encoding.NrDyn;end
 end
@@ -49,7 +36,7 @@ end
 % Set geometry related parameters
 set_geometry_parameters(MR);
 
-%% Display
+% Display
 % Notification
 fprintf('Finished [%.2f sec] \n',toc')
 

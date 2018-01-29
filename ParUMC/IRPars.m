@@ -16,13 +16,12 @@ classdef IRPars < dynamicprops & deepCopyable
 %% Parameters that are adjustable at configuration
 properties
     IterativeReconstruction % |YesNo| for iterative reconstruction
-    PotentialFunction % |Integer| 1=l1-norm (CS), 2=l2-norm (LSQR)
+    PotentialFunction % |Integer| 1=l1-norm, 2=l2-norm 
     SplitDimension % |Integer| Dimension where to split the reconstruction on. 3=per z, 5=per dynamics
-    TVDimension % |Cell of arrays| Array with order of TV, so [1 1 1 0 0] = first order TV in first three dimensions.
+    TVDimension % |Cell of arrays| Array with order of TV, so [1 1 1 0 0] = TV in first three dimensions.
     TVLambda % |Cell of arrays| Array with corresponding weights for each TV dimension
-    WaveletDimension % |String| '2D' or '3D' Wavelet transform
     WaveletLambda % |Double| Corresponding Wavelet weight
-    Residual % |Array| Residuel after lsqr reconstruction
+    Optimizer % |String| 'FISTA' or 'ADMM' or 'Primal Dual'
 end
 
 %% Set default values
@@ -33,9 +32,8 @@ methods
         IR.PotentialFunction=2; 
         IR.SplitDimension=12; 
         IR.IterativeReconstruction='no';
-        IR.Residual=[]; 
-        IR.WaveletDimension='no';
         IR.WaveletLambda={0,0,0};
+	IR.Optimizer='';
     end
 end
 

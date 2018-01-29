@@ -2,19 +2,16 @@ function ReadAndCorrect( MR )
 %Perform the standard data correction functions. Note that ReadData is
 % overloaded to differently handle the noise and phase correction
 % calibration data.
+%
+% V20180129 - T.Bruijnen
 
-%% Logic and display
-% If simulation mode is activated this is not required
-if strcmpi(MR.UMCParameters.Simulation.Simulation,'yes')
-    MR=generate_simulation_data(MR);
-    return;
-end
-
+% Logic and display
 % Notification
 fprintf('Perform ReadAndCorrect ...........................  ');tic;
 
 %% Large data set handling
-% These are loaded and corrected channelwise
+% These are loaded and corrected channelwise to prevent freezing during the
+% randomphasecorrection steps
 
 % Save default channel indices
 ch_idx=MR.Parameter.Parameter2Read.chan;
@@ -58,14 +55,13 @@ end
 % Reset parameter2read indices
 MR.Parameter.Parameter2Read.chan=ch_idx;
 
-% Orden multi-coil data
+% Order multi-coil data
 data=cat(2,data{:});
 MR.Data=reshape(data,[size(data,1),size(data,2)*size(data,3)]);
 
 % Change labels
 MR.Parameter.LabelLookupTable=numel(ch_idx)+(1:size(MR.Data,2));
 
-%% Display
 % Notification
 fprintf('Finished [%.2f sec]\n',toc')
 

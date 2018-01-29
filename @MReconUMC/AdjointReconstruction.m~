@@ -15,7 +15,7 @@ if MR.Parameter.ReconFlags.isgridded==1 || strcmpi(MR.UMCParameters.IterativeRec
     return;end
 
 % Notifcation for display
-if ~MR.UMCParameters.ReconFlags.NufftCsmMapping;fprintf(['Initialize operators and do NUFFT ................  ']);tic;end
+if ~MR.UMCParameters.ReconFlags.NufftCsmMapping;fprintf(['Initialize operators and do NUFFT ............  ']);tic;end
 
 for n=1:numel(MR.Data)
     
@@ -34,17 +34,20 @@ for loc=1:Kd(8)  % Mixes
 for ech=1:Kd(7)  % Echos
 for ph=1:Kd(6)   % Phases
 for dyn=1:Kd(5)  % Dynamics
+for coil=1:Kd(4)
+    
     % Per slice
     if MR.UMCParameters.IterativeReconstruction.SplitDimension==3 || strcmpi(MR.Parameter.Scan.ScanMode,'2D')
         for z=1:Kd(3)
-            res(:,:,z,:,dyn,ph,ech,loc,mix,ex1,ex2,avg)=bart(['nufft -i -d', num2str(Id(1)),':',num2str(Id(2)),':',num2str(1),' -t'],...
-                MR.Parameter.Gridder.Kpos{n}(:,:,:,:,:,dyn,ph,ech,loc,mix,ex1,ex2,avg),...
+            res(:,:,z,coil,dyn,ph,ech,loc,mix,ex1,ex2,avg)=bart(['nufft -i -d', num2str(Id(1)),':',num2str(Id(2)),':',num2str(1),' -t'],...
+                MR.Parameter.Gridder.Kpos{n}(:,:,:,:,dyn,ph,ech,loc,mix,ex1,ex2,avg),...
                 reconframe_to_bart(MR.Data{n}(:,:,z,:,dyn,ph,ech,loc,mix,ex1,ex2,avg)));end
     else % Per Volume
-            res(:,:,:,:,dyn,ph,ech,loc,mix,ex1,ex2,avg)=bart(['nufft -i -d', num2str(Id(1)),':',num2str(Id(2)),':',num2str(Id(3)),' -t'],...
-                MR.Parameter.Gridder.Kpos{n}(:,:,:,:,:,dyn,ph,ech,loc,mix,ex1,ex2,avg),...
+            res(:,:,:,coil,dyn,ph,ech,loc,mix,ex1,ex2,avg)=bart(['nufft -i -d', num2str(Id(1)),':',num2str(Id(2)),':',num2str(Id(3)),' -t'],...
+                MR.Parameter.Gridder.Kpos{n}(:,:,:,:,dyn,ph,ech,loc,mix,ex1,ex2,avg),...
                 reconframe_to_bart(MR.Data{n}(:,:,:,:,dyn,ph,ech,loc,mix,ex1,ex2,avg)));       
     end
+end % Coils
 end % Dynamics
 end % Echos
 end % Phases
