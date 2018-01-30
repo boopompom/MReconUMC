@@ -53,7 +53,6 @@ end
 MR.Parameter.Gridder.Kpos=cellfun(@(x) x*MR.UMCParameters.AdjointReconstruction.SpatialResolutionRatio,...
     kn,'UniformOutput',false);
 
-% Scale trajectory for BART nufft
 
 
 % END

@@ -11,7 +11,7 @@ scan=3;
 %%
 clear MR
 MR=MReconUMC(root,scan);
-%MR.Parameter.Parameter2Read.ky=MR.Parameter.Parameter2Read.ky(1:800);
+MR.Parameter.Parameter2Read.ky=MR.Parameter.Parameter2Read.ky(1:500);
 %MR.Parameter.Parameter2Read.chan=MR.Parameter.Parameter2Read.chan(c);
 %MR.UMCParameters.Operators.Niter=2;
 %MR.UMCParameters.GeneralComputing.Chunks=3;
@@ -37,7 +37,7 @@ MR=MReconUMC(root,scan);
 %MR.UMCParameters.AdjointReconstruction.R=2;
 %MR.UMCParameters.GeneralComputing.ParallelComputing='yes';
 %MR.UMCParameters.SystemCorrections.PhaseCorrection='no';
-%MR.UMCParameters.AdjointReconstruction.SpatialResolution=3;
+MR.UMCParameters.AdjointReconstruction.SpatialResolution=1;
 %MR.UMCParameters.AdjointReconstruction.IterativeDensityEstimation='yes';
 % MR.UMCParameters.SystemCorrections.Girf='yes';
 % MR.UMCParameters.SystemCorrections.GirfNominalTrajectory='yes';

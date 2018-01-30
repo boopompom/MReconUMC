@@ -23,7 +23,7 @@ radial_set_angles(MR);
 radial_analytical_trajectory(MR);
 
 % Calculate Ram-lak density function
-radial_analytical_density(MR);
+%radial_analytical_density(MR);
 
 % Use PPE GR` objects to compute trajectory and apply GIRF
 gradient_impulse_response_function(MR);
