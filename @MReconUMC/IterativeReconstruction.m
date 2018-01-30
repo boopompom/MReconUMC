@@ -1,73 +1,55 @@
 function IterativeReconstruction( MR )
-%Perform iterative reconstruction with either the matlab (lsqr)
-% or nonlinear conjugate gradient routine. Similar to the function from
-% Miki Lustigs website. This routine creates a structure in MR.UMCParameters.
-% Operators which includes the nufft, sensitivity, density and various
-% sparsity transform operators. This structure is then fed to the iterative
-% solvers.
-%
-% 20170717 - T.Bruijnen
 
-%% Logic & display
-if strcmpi(MR.UMCParameters.IterativeReconstruction.IterativeReconstruction,'no')
-    return;
-end
+% Logic & display
+if ~strcmpi(MR.UMCParameters.IterativeReconstruction.IterativeReconstruction,'yes')
+    return;end
 
+% Notifcation for display
 fprintf('Iterative reconstruction..........................  ');tic;
 
-%% Iterative Reconstruction
-% Get dimensions for data handling in short parameters
-num_data=numel(MR.Data);
-Kd=MR.UMCParameters.AdjointReconstruction.KspaceSize; 
-Id=MR.Parameter.Gridder.OutputMatrixSize;
-
-% Iterate over all data chunks and partitions
-for n=1:num_data % Loop over "data chunks"
+for n=1:numel(MR.Data)
     
-    % Preallocate memory for res
-    res=zeros([Id{n}(1:3) 1 Id{n}(5:12)]);
-    
-    % Track progress
-    parfor_progress(Kd{n}(MR.UMCParameters.IterativeReconstruction.SplitDimension));
-    
-    % Determine how to split the reconstructions, e.g. per slice or per dynamic
-    for p=1:Kd{n}(MR.UMCParameters.IterativeReconstruction.SplitDimension) % Loop over "partitions"
-        % Initialize lsqr/nlcg structure to send to the solver 
-        lsqr_init(MR,n,p);
-        nlcg_init(MR,n,p);
+% Short variable
+Kd=MR.UMCParameters.AdjointReconstruction.KspaceSize{n};
+Id=[MR.Parameter.Gridder.OutputMatrixSize{n}(1:3) MR.UMCParameters.AdjointReconstruction.IspaceSize{n}(4:end)];
 
-        % Feed structure to the lsqr solver if potential function is l1
-        if MR.UMCParameters.IterativeReconstruction.PotentialFunction==1
-            [res_tmp,MR.UMCParameters.Operators.Residual(:,n,p)]=configure_compressed_sensing(MR.UMCParameters.Operators);end
-            
-        % Feed structure to the lsqr solver if potential function is quadratic
-        if MR.UMCParameters.IterativeReconstruction.PotentialFunction==2
-            [res_tmp,MR.UMCParameters.Operators.Residual(:,n,p)]=configure_regularized_iterative_sense(MR.UMCParameters.Operators);end
-            
-        % Allocate to adequate part of the matrix
-        res=dynamic_indexing(res,MR.UMCParameters.IterativeReconstruction.SplitDimension,p,single(res_tmp));
-
-        % Track progress 
-        parfor_progress;
-        
+% Preallocate output
+res=zeros(Id);
+    
+for avg=1:Kd(12) % Averages
+for ex2=1:Kd(11) % Extra2
+for ex1=1:Kd(10) % Extra1
+for mix=1:Kd(9)  % Locations
+for loc=1:Kd(8)  % Mixes
+for ech=1:Kd(7)  % Echos
+for ph=1:Kd(6)   % Phases
+for dyn=1:Kd(5)  % Dynamics
+    % Per slice
+    if MR.UMCParameters.IterativeReconstruction.SplitDimension==3 || strcmpi(MR.Parameter.Scan.ScanMode,'2D')
+        for z=1:Kd(3)
+            res(:,:,z,:,dyn,ph,ech,loc,mix,ex1,ex2,avg)=bart(['nufft -i -d', num2str(Id(1)),':',num2str(Id(2)),':',num2str(1)],...
+                MR.Parameter.Gridder.Kpos{n}(:,:,:,:,:,dyn,ph,ech,loc,mix,ex1,ex2,avg),...
+                reconframe_to_bart(MR.Data{n}(:,:,z,:,dyn,ph,ech,loc,mix,ex1,ex2,avg)));end
+    else % Per Volume
+            res(:,:,:,:,dyn,ph,ech,loc,mix,ex1,ex2,avg)=bart(['nufft -i -d', num2str(Id(1)),':',num2str(Id(2)),':',num2str(Id(3)),' -t'],...
+                MR.Parameter.Gridder.Kpos{n}(:,:,:,:,:,dyn,ph,ech,loc,mix,ex1,ex2,avg),...
+                reconframe_to_bart(MR.Data{n}(:,:,:,:,dyn,ph,ech,loc,mix,ex1,ex2,avg)));       
     end
-    
-    % Replace mr data with the result
-    MR.Data{n}=res;clear res
-    
-end
+end % Dynamics
+end % Echos
+end % Phases
+end % Mixes
+end % Locations
+end % Extra1
+end % Extra2
+end % Averages
+MR.Data{n}=res;
+end % Chunks
 
-%% Display and reconstruction flags
-% Reset progress tracker
-parfor_progress(0);
-
-% Correctly set reconstruction flags
-MR.Parameter.ReconFlags.iscombined=1;
+% Display and reconstruction flags
 MR=set_gridding_flags(MR,1);
 MR.Parameter.ReconFlags.isoversampled=[1,1,1];
-    
-% Notification
-fprintf('Finished [%.2f sec] \n',toc')
+if ~MR.UMCParameters.ReconFlags.NufftCsmMapping;fprintf('Finished [%.2f sec] \n',toc');end
 
 % END
 end
