@@ -18,6 +18,10 @@ if strcmpi(MR.Parameter.Scan.UTE,'yes') && strcmpi(MR.UMCParameters.SystemCorrec
     MR.UMCParameters.SystemCorrections.Girf='yes';
 end
 
+if strcmpi(MR.UMCParameters.AdjointReconstruction.CoilSensitivityMaps,'no') && strcmpi(MR.UMCParameters.IterativeReconstruction.IterativeReconstruction,'yes')
+    MR.UMCParameters.AdjointReconstruction.CoilSensitivityMaps='espirit';
+end
+
 % Check if enough memory is available to reconstruct
 [MemoryNeeded, MemoryAvailable, ~] = MR.GetMemoryInformation;
 if MemoryNeeded > MemoryAvailable

@@ -18,27 +18,25 @@ properties
     IterativeReconstruction % |YesNo| for iterative reconstruction
     PotentialFunction % |Integer| 1=l1-norm, 2=l2-norm 
     SplitDimension % |Integer| Dimension where to split the reconstruction on. 3=per z, 5=per dynamics
+    TVDimension % |Cell of arrays| Array with order of TV, so [1 1 1 0 0] = TV in first three dimensions.
     TVLambda % |Cell of arrays| Array with corresponding weights for each TV dimension
     WaveletLambda % |Double| Corresponding Wavelet weight
     Optimizer % |String| 'FISTA' or 'ADMM' or 'Primal Dual'
     MaxIterations % |Integer| number of outter iterations
     MaxInnerIterations % |Integer| number of inner iterations (ADMM)
-    CGLambda % |Double| lambda for cg in ADMM or primal dual
-    
+    CG
 end
 
 %% Set default values
 methods
     function IR = IRPars()   
-        IR.TVLambda='';
-        IR.PotentialFunction='1'; 
+        IR.TVDimension={[0 0 0 0 0],[0,0,0,0,0],[0,0,0,0,0]}; 
+        IR.TVLambda={[1 0 0 0 0],[1 0 0 0 0],[1 0 0 0 0]};
+        IR.PotentialFunction=2; 
         IR.SplitDimension=12; 
         IR.IterativeReconstruction='no';
-        IR.WaveletLambda='';
-        IR.Optimizer='';
-        IR.MaxIterations='';
-        IR.MaxInnerIterations='';
-        IR.CGLambda='';
+        IR.WaveletLambda={0,0,0};
+	IR.Optimizer='';
     end
 end
 
