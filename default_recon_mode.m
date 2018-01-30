@@ -1,9 +1,10 @@
 
 %% Setup path and select root of data
 clear all;clc;clear classes;close all;restoredefaultpath
-addpath(genpath('/nfs/bsc01/researchData/USER/tbruijne/Projects_Software/MRecon-3.0.552'))
-addpath(genpath('/nfs/bsc01/researchData/USER/tbruijne/Projects_Software/MReconUMCBART'))
-addpath(genpath('/local_scratch/tbruijne/BART/bart-0.4.02'))
+addpath(genpath('/local_scratch/tbruijne/BART/MRecon-3.0.552/'))
+addpath(genpath('/local_scratch/tbruijne/BART/MReconUMCBART'))
+addpath(fullfile('/local_scratch/tbruijne/BART/bart-0.4.02/','matlab'));
+setenv('TOOLBOX_PATH','/local_scratch/tbruijne/BART/bart-0.4.02/');
 root='/local_scratch/tbruijne/WorkingData/2DGA/';
 scan=3;
 

@@ -43,15 +43,18 @@ for n=1:num_data
     % Normalize
     k{n}=k{n}/dims{n}(1);
 
-    % Split real and imaginary parts into channels
+    % Split real and imaginary parts into channels & scale for bart
     kn{n}=zeros([3,size(k{n})],'single');
-    kn{n}(1,:,:,:,:,:,:,:,:,:,:,:)=imag(k{n});
-    kn{n}(2,:,:,:,:,:,:,:,:,:,:,:)=real(k{n});
+    kn{n}(1,:,:,:,:,:,:,:,:,:,:,:)=imag(k{n})*MR.Parameter.Gridder.OutputMatrixSize{n}(1);
+    kn{n}(2,:,:,:,:,:,:,:,:,:,:,:)=real(k{n})*MR.Parameter.Gridder.OutputMatrixSize{n}(2);
 end
 
-% Apply spatial resolution factor
-MR.Parameter.Gridder.Kpos=cellfun(@(x) x*.5*size(x,2)*MR.UMCParameters.AdjointReconstruction.SpatialResolutionRatio,...
+% Apply spatial resolution factor 
+MR.Parameter.Gridder.Kpos=cellfun(@(x) x*MR.UMCParameters.AdjointReconstruction.SpatialResolutionRatio,...
     kn,'UniformOutput',false);
+
+% Scale trajectory for BART nufft
+
 
 % END
 end
