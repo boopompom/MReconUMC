@@ -3,7 +3,7 @@ function pics_call = compose_pics_call(MR)
 %
 % V20180129 - T.Bruijnen
 
-pics_call='pics -e -S';
+pics_call='pics -e ';
 
 % Wavelet regularization
 if ~isempty(MR.UMCParameters.IterativeReconstruction.WaveletLambda)
@@ -13,7 +13,7 @@ end
 % Total variation regularization
 if ~isempty(MR.UMCParameters.IterativeReconstruction.TVLambda)
     % Create bitmask depending on the dimensions
-    tv_idx=find(MR.UMCParameters.IterativeReconstruction.TVLambda>0);
+    tv_idx=find(dim_reconframe_to_bart(MR.UMCParameters.IterativeReconstruction.TVLambda)>0);
     bm=@(x)(sum(2.^x));
    
     pics_call=strcat(pics_call,[' -R T:',num2str(bm(tv_idx-1)),':0:',...

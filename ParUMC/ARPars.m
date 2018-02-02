@@ -10,7 +10,7 @@ properties
     IterativeDensityEstimation % |YesNo|
     PrototypeMode % |Integer| Prototyping with fewer dynamics 
     R % |Double| Acceleration factor
-    
+    RespiratorySorting % |YesNo|
     SoftGating % |YesNo| 
     SpatialResolution % |Double| Reconstruction voxel size [mm], only for in-plane resolution
 end
@@ -22,7 +22,6 @@ properties ( Hidden )
     KspaceSize % |Cell of arrays| K-space dimensions, extracted from PPE
     SpatialResolutionRatio % |Double| Involved in calculation of trajectory for different resolution
     SoftWeights % |Array| with respiratory motion signal
-
 end
 
 %% Set default values
@@ -39,6 +38,7 @@ methods
         AR.SpatialResolutionRatio=[]; % No input needed
         AR.SoftGating='no';
         AR.SoftWeights=[];
+        AR.RespiratorySorting='';
     end
 end
 

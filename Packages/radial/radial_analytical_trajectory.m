@@ -29,10 +29,10 @@ for n=1:num_data
 
     % Modulate the phase of all the successive spokes
     k{n}=zeros([dims{n}(1),dims_angles(2:end)]);
-    for ech=1:dims_angles(7)
-        for dyn=1:dims_angles(5)
+    for ech=1:dims_angles(6)
+        for dyn=1:dims_angles(4)
             for l=1:dims_angles(2)
-                k{n}(:,l,:,:,dyn,:,ech)=(-1)^(ech+1)*x*exp(1j*MR.Parameter.Gridder.RadialAngles{n}(:,l,:,:,dyn,:,ech));
+                k{n}(:,l,:,dyn,:,ech)=(-1)^(ech+1)*x*exp(1j*MR.Parameter.Gridder.RadialAngles{n}(:,l,:,dyn,:,ech));
             end
         end
     end
@@ -47,13 +47,24 @@ for n=1:num_data
     kn{n}=zeros([3,size(k{n})],'single');
     kn{n}(1,:,:,:,:,:,:,:,:,:,:,:)=imag(k{n})*MR.Parameter.Gridder.OutputMatrixSize{n}(1);
     kn{n}(2,:,:,:,:,:,:,:,:,:,:,:)=real(k{n})*MR.Parameter.Gridder.OutputMatrixSize{n}(2);
+    
+    % Stack of stars trajectory for 3D gridding
+    if strcmpi(MR.Parameter.Scan.ScanMode,'3D') && MR.UMCParameters.IterativeReconstruction.SplitDimension~=3              
+        if mod(dims{n}(3),2)>0 % is uneven
+            kz=linspace(-.5,0.5,dims{n}(3));
+        else % is even
+            kz=linspace(-.5,0.5,dims{n}(3)+1);kz(end)=[];
+        end
+        repdim=[1 dims{n}];repdim([4 5])=1;
+        kn{n}=repmat(kn{n},[1 1 1 dims{1}(3)]);
+        kn{n}(3,:,:,:,:,:,:,:,:,:,:)=repmat(permute(kz,[1 3 4 2]),repdim)*MR.Parameter.Gridder.OutputMatrixSize{n}(3);
+    end
+    
 end
 
 % Apply spatial resolution factor 
 MR.Parameter.Gridder.Kpos=cellfun(@(x) x*MR.UMCParameters.AdjointReconstruction.SpatialResolutionRatio,...
     kn,'UniformOutput',false);
-
-
 
 % END
 end

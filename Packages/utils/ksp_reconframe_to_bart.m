@@ -1,4 +1,4 @@
-function res = reconframe_to_bart(input)
+function res = ksp_reconframe_to_bart(input)
 %Transform 12D arrays from reconframe to bart
 %
 % V20180129 - Tom Bruijnen

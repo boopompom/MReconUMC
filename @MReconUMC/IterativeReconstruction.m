@@ -9,45 +9,57 @@ fprintf('Iterative reconstruction..........................  ');tic;
 
 for n=1:numel(MR.Data)
     
-% Short variable
-Kd=MR.UMCParameters.AdjointReconstruction.KspaceSize{n};
-Id=[MR.Parameter.Gridder.OutputMatrixSize{n}(1:3) 1 MR.UMCParameters.AdjointReconstruction.IspaceSize{n}(5:end)];
-
-% Preallocate output
-res=zeros(Id);
+    % Short variables for reconframe dimensions
+    rf_Kd=MR.UMCParameters.AdjointReconstruction.KspaceSize{n};
+    rf_Id=[MR.Parameter.Gridder.OutputMatrixSize{n}(1:3) 1 MR.UMCParameters.AdjointReconstruction.IspaceSize{n}(5:end)];
+    rf_it_dim=MR.UMCParameters.IterativeReconstruction.SplitDimension;
     
-% Generate bart pics call
-pics_call=compose_pics_call(MR);
+    % Different index for k-space trajectory [3 nx ns nz dyn] instead of [nx ns nz nc dyn]
+    ktraj_it_dim=rf_it_dim;    
+    if rf_it_dim < 5;ktraj_it_dim=ktraj_it_dim+1;end
+    
+    % Short variables for BART dimensions
+    bart_Id=dim_reconframe_to_bart(rf_Id);
+    bart_it_dim=dim_reconframe_to_bart(rf_it_dim);
 
-for avg=1:Kd(12) % Averages
-for ex2=1:Kd(11) % Extra2
-for ex1=1:Kd(10) % Extra1
-for mix=1:Kd(9)  % Locations
-for loc=1:Kd(8)  % Mixes
-for ech=1:Kd(7)  % Echos
-for ph=1:Kd(6)   % Phases
-for dyn=1:Kd(5)  % Dynamics
-    % Per slice
-    if MR.UMCParameters.IterativeReconstruction.SplitDimension==3 || strcmpi(MR.Parameter.Scan.ScanMode,'2D')
-        for z=1:Kd(3)
-            res(:,:,z,:,dyn,ph,ech,loc,mix,ex1,ex2,avg)=bart(pics_call,...
-                MR.Parameter.Gridder.Kpos{n}(:,:,:,:,:,dyn,ph,ech,loc,mix,ex1,ex2,avg),...
-                reconframe_to_bart(MR.Data{n}(:,:,z,:,dyn,ph,ech,loc,mix,ex1,ex2,avg)),...
-                MR.Parameter.Recon.Sensitivities{n}(:,:,z,:,dyn,ph,ech,loc,mix,ex1,ex2,avg));end        
-    else % Per Volume
-            res(:,:,:,:,dyn,ph,ech,loc,mix,ex1,ex2,avg)=bart(pics_call,...
-                MR.Parameter.Gridder.Kpos{n}(:,:,:,:,:,dyn,ph,ech,loc,mix,ex1,ex2,avg),...
-                reconframe_to_bart(MR.Data{n}(:,:,:,:,dyn,ph,ech,loc,mix,ex1,ex2,avg)));       
+    % Preallocate output
+    res=zeros(bart_Id);    
+    
+    % Generate bart pics call
+    pics_call=compose_pics_call(MR);
+    
+    % Calculate coil maps on the fly if not pre-calculated
+    calc_csm=0;
+    if isempty(MR.Parameter.Recon.Sensitivities)
+        calc_csm=1;
+        esp_Id=bart_Id;esp_Id(bart_it_dim)=1;esp_Id(11)=1;esp_Id(4)=rf_Kd(4);end
+    
+    % Track progress
+    parfor_progress(rf_Kd(rf_it_dim));
+    
+    for p=1:rf_Kd(rf_it_dim) % Loop over "partitions"
+        
+        if calc_csm
+            csm=espirit(ktraj_reconframe_to_bart(dynamic_indexing(dynamic_to_spokes(MR.Parameter.Gridder.Kpos{n}),ktraj_it_dim,p)),...
+                ksp_reconframe_to_bart(dynamic_indexing(dynamic_to_spokes(MR.Data{n}),rf_it_dim,p)),esp_Id);
+        else
+            csm=isp_reconframe_to_bart(dynamic_indexing(MR.Parameter.Recon.Sensitivities{n},rf_it_dim,p));
+        end
+
+        tic
+        % Do iterative reconstruction
+        res=dynamic_indexing(res,bart_it_dim,p,bart(pics_call,...
+            ktraj_reconframe_to_bart(dynamic_indexing(MR.Parameter.Gridder.Kpos{n},ktraj_it_dim,p)),...
+            ksp_reconframe_to_bart(dynamic_indexing(MR.Data{n},rf_it_dim,p)),...
+            csm));
+        toc
+        % Track progress
+        parfor_progress;
     end
-end % Dynamics
-end % Echos
-end % Phases
-end % Mixes
-end % Locations
-end % Extra1
-end % Extra2
-end % Averages
-MR.Data{n}=res;
+
+    % Reformat back to reconframe dimensions
+    MR.Data{n}=isp_bart_to_reconframe(res);
+    
 end % Chunks
 
 % Display and reconstruction flags

@@ -19,41 +19,41 @@ if ~MR.UMCParameters.ReconFlags.NufftCsmMapping;fprintf(['Initialize operators a
 
 for n=1:numel(MR.Data)
     
-% Short variable
-Kd=MR.UMCParameters.AdjointReconstruction.KspaceSize{n};
-Id=[MR.Parameter.Gridder.OutputMatrixSize{n}(1:3) MR.UMCParameters.AdjointReconstruction.IspaceSize{n}(4:end)];
-
-% Preallocate output
-res=zeros(Id);
+    % Short variables for reconframe dimensions
+    rf_Kd=MR.UMCParameters.AdjointReconstruction.KspaceSize{n};
+    rf_Id=[MR.Parameter.Gridder.OutputMatrixSize{n}(1:3) MR.UMCParameters.AdjointReconstruction.IspaceSize{n}(4:end)];
+    rf_it_dim=MR.UMCParameters.IterativeReconstruction.SplitDimension;
     
-for avg=1:Kd(12) % Averages
-for ex2=1:Kd(11) % Extra2
-for ex1=1:Kd(10) % Extra1
-for mix=1:Kd(9)  % Locations
-for loc=1:Kd(8)  % Mixes
-for ech=1:Kd(7)  % Echos
-for ph=1:Kd(6)   % Phases
-for dyn=1:Kd(5)  % Dynamics
-    % Per slice
-    if MR.UMCParameters.IterativeReconstruction.SplitDimension==3 || strcmpi(MR.Parameter.Scan.ScanMode,'2D')
-        for z=1:Kd(3)
-            res(:,:,z,:,dyn,ph,ech,loc,mix,ex1,ex2,avg)=bart(['nufft -i -d', num2str(Id(1)),':',num2str(Id(2)),':',num2str(1)],...
-                MR.Parameter.Gridder.Kpos{n}(:,:,:,:,:,dyn,ph,ech,loc,mix,ex1,ex2,avg),...
-                reconframe_to_bart(MR.Data{n}(:,:,z,:,dyn,ph,ech,loc,mix,ex1,ex2,avg)));end
-    else % Per Volume
-            res(:,:,:,:,dyn,ph,ech,loc,mix,ex1,ex2,avg)=bart(['nufft -i -d', num2str(Id(1)),':',num2str(Id(2)),':',num2str(Id(3)),' -t'],...
-                MR.Parameter.Gridder.Kpos{n}(:,:,:,:,:,dyn,ph,ech,loc,mix,ex1,ex2,avg),...
-                reconframe_to_bart(MR.Data{n}(:,:,:,:,dyn,ph,ech,loc,mix,ex1,ex2,avg)));       
+    % Different index for k-space trajectory [3 nx ns nz dyn] instead of [nx ns nz nc dyn]
+    ktraj_it_dim=rf_it_dim;    
+    if rf_it_dim < 5;ktraj_it_dim=ktraj_it_dim+1;end
+    
+    % Short variables for BART dimensions
+    bart_Id=dim_reconframe_to_bart(rf_Id);
+    bart_it_dim=dim_reconframe_to_bart(rf_it_dim);
+
+    % Preallocate output
+    res=zeros(bart_Id);    
+
+    % Generate bart nufft call
+    nufft_call=compose_nufft_call(MR,n);
+        
+    % Track progress
+    parfor_progress(rf_Kd(rf_it_dim));
+   
+    for p=1:rf_Kd(rf_it_dim) % Loop over "partitions"
+        
+        % Do inverse NUFFT
+        res=dynamic_indexing(res,bart_it_dim,p,bart(nufft_call,...
+            ktraj_reconframe_to_bart(dynamic_indexing(MR.Parameter.Gridder.Kpos{n},ktraj_it_dim,p)),...
+            ksp_reconframe_to_bart(dynamic_indexing(MR.Data{n},rf_it_dim,p))));
+        
+        % Track progress
+        parfor_progress;
     end
-end % Dynamics
-end % Echos
-end % Phases
-end % Mixes
-end % Locations
-end % Extra1
-end % Extra2
-end % Averages
-MR.Data{n}=res;
+        
+        
+    MR.Data{n}=isp_bart_to_reconframe(res);
 end % Chunks
 
 % Display and reconstruction flags

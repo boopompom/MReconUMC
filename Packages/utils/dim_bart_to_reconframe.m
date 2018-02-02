@@ -1,9 +1,9 @@
-function res = reconframe_to_bart(input)
+function res = dim_bart_to_reconframe(input)
 %Transform 12D arrays from reconframe to bart
 %
 % V20180129 - Tom Bruijnen
 
-res=permute(input,[3 1 2 4 12 7 6 8 9 10 5 11]);
+res=input([1 2 3 4 12 7 10 11 8 9 5 6]);
 
 %BART:
 %     READ_DIM,        1

@@ -18,8 +18,14 @@ if strcmpi(MR.Parameter.Scan.UTE,'yes') && strcmpi(MR.UMCParameters.SystemCorrec
     MR.UMCParameters.SystemCorrections.Girf='yes';
 end
 
-if strcmpi(MR.UMCParameters.AdjointReconstruction.CoilSensitivityMaps,'no') && strcmpi(MR.UMCParameters.IterativeReconstruction.IterativeReconstruction,'yes')
-    MR.UMCParameters.AdjointReconstruction.CoilSensitivityMaps='espirit';
+if ~isempty(MR.UMCParameters.AdjointReconstruction.RespiratorySorting)
+    MR.UMCParameters.AdjointReconstruction.R=MR.UMCParameters.AdjointReconstruction.RespiratorySorting;
+end
+
+if MR.UMCParameters.IterativeReconstruction.SplitDimension==4
+    fprintf('\n>>>>>>>>>> Warning: Reconstructions cant be split over the coil dimension. <<<<<<<\n')
+	fprintf('>>>>>>>>>> Change: Split dimension set to default (12).                   <<<<<<<<<<\n')
+    MR.UMCParameters.IterativeReconstruction.SplitDimension=12;
 end
 
 % Check if enough memory is available to reconstruct

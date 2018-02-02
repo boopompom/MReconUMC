@@ -1,4 +1,4 @@
-function csm = espirit(traj,kdata,dims)
+function csm = espirit2(traj,kdata,dims)
 %Call BART toolbox to compute coil maps using espirit.
 %
 % V20180129 - T.Bruijnen
@@ -13,7 +13,7 @@ lowres_ksp=bart('fft -u 7', lowres_img);
 ksp_zerop=zpad(lowres_ksp,dims);
 
 % Calculate sense maps
-csm=bart('ecalib -t 0.005 -m1',ksp_zerop);
+csm=bart('ecalib -t 0.01 -m1',ksp_zerop);
 
 
 % END

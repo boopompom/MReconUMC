@@ -12,7 +12,7 @@ dims(3)=MR.UMCParameters.AdjointReconstruction.IspaceSize{n}(3);
 
 % Count number of elements in MR.Data. If its larger then 10^8 use a less
 % memory intensive method
-if numel(MR.Data{n})>5*10^8
+if numel(MR.Data{n})>.8*10^9
     inst=1;
 else
     inst=0;
@@ -32,18 +32,16 @@ if inst==0
     for loc=1:dims(8)  % Mixes
     for ech=1:dims(7)  % Echoes
         % Estimate nearest neighbour center point of the readouts
-        [~,cp]=min(sqrt(MR.Parameter.Gridder.Kpos{n}(1,:,1,1,1,1,1,ech,1,1,1,1,1,1).^2+MR.Parameter.Gridder.Kpos{n}(2,:,1,1,1,1,1,ech,1,1,1,1,1,1).^2)); % central point
+        [~,cp]=min(sqrt(MR.Parameter.Gridder.Kpos{n}(1,:,1,1,1,1,ech,1,1,1,1,1,1).^2+MR.Parameter.Gridder.Kpos{n}(2,:,1,1,1,1,ech,1,1,1,1,1,1).^2)); % central point
         
     for ph=1:dims(6)   % Phases
     for dyn=1:dims(5)  % Dynamics
     for coil=1:dims(4) % Coils
-    for z=1:dims(3)    % Z
         
-        cur_phase=angle(MR.Data{n}(cp,:,z,coil,dyn,ph,ech,loc,mix,ex1,ex2,avg));
-        phase_corr_matrix(:,:,z,coil,dyn,ph,ech,loc,mix,ex1,ex2,avg)=...
+        cur_phase=angle(MR.Data{n}(cp,:,:,coil,dyn,ph,ech,loc,mix,ex1,ex2,avg));
+        phase_corr_matrix(:,:,:,coil,dyn,ph,ech,loc,mix,ex1,ex2,avg)=...
             single(exp(-1j*repmat(cur_phase,[dims(1) 1 1 1 1 1 1 1 1 1 1 1])));
-        
-    end % Z
+
     end % Coils
     end % Dynamics
     end % Echos
@@ -58,10 +56,7 @@ if inst==0
     MR.Data{n}=MR.Data{n}.*phase_corr_matrix;
     
 else % inst==1
-    
-     % Preallocate the matrix
-    phase_corr_matrix_instance=zeros(dims(1:3));
-    
+        
     % Loop over all lines and determine the correction phase
     for avg=1:dims(12) % Averages
     for ex2=1:dims(11) % Extra2
@@ -70,21 +65,18 @@ else % inst==1
     for loc=1:dims(8)  % Mixes
     for ech=1:dims(7)  % Phases
         % Estimate nearest neighbour center point of the readouts
-        [~,cp]=min(MR.Parameter.Gridder.Weights{n}(:,1,1,1,1,1,ech,1,1,1,1,1,1),[],1); % central point
+        [~,cp]=min(sqrt(MR.Parameter.Gridder.Kpos{n}(1,:,1,1,1,1,ech,1,1,1,1,1,1).^2+MR.Parameter.Gridder.Kpos{n}(2,:,1,1,1,1,ech,1,1,1,1,1,1).^2)); % central point
     for ph=1:dims(6)   % Echos
     for dyn=1:dims(5)  % Dynamics
     for coil=1:dims(4) % Coils
-    for z=1:dims(3)    % Z
         
-        cur_phase=angle(MR.Data{n}(cp,:,z,coil,dyn,ph,ech,loc,mix,ex1,ex2,avg));
-        phase_corr_matrix_instance(:,:,z)=...
-            single(exp(-1j*repmat(cur_phase,[dims(1) 1 1 1 1 1 1 1 1 1 1 1])));
-        
-    end % Z
-    
+        cur_phase=angle(MR.Data{n}(cp,:,:,coil,dyn,ph,ech,loc,mix,ex1,ex2,avg));
+        phase_corr_matrix=single(exp(-1j*repmat(cur_phase,[dims(1) 1 1 1 1 1 1 1 1 1 1 1])));
+            
         % Correct first instance (i.e. [x,y,z])
-        MR.Data{n}(:,:,:,coil,dyn,ph,ech,loc,mix,ex1,ex2,avg)=MR.Data{n}(:,:,:,coil,dyn,ph,ech,loc,mix,ex1,ex2,avg).*phase_corr_matrix_instance;
-        
+        MR.Data{n}(:,:,:,coil,dyn,ph,ech,loc,mix,ex1,ex2,avg)=MR.Data{n}(:,:,:,coil,dyn,ph,ech,loc,mix,ex1,ex2,avg).*phase_corr_matrix;
+
+        coil
     end % Coils
     end % Dynamics
     end % Echos
