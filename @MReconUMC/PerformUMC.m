@@ -20,6 +20,7 @@ MR.IterativeReconstruction;
 MR.CombineCoils; 
 MR.GeometryCorrection;
 MR.RemoveOversampling;
+MR.ZeroFill;
 MR.RotateImage;
 
 %% Display

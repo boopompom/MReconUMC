@@ -47,7 +47,7 @@ for n=1:num_data
     kn{n}=zeros([3,size(k{n})],'single');
     kn{n}(1,:,:,:,:,:,:,:,:,:,:,:)=imag(k{n})*MR.Parameter.Gridder.OutputMatrixSize{n}(1);
     kn{n}(2,:,:,:,:,:,:,:,:,:,:,:)=real(k{n})*MR.Parameter.Gridder.OutputMatrixSize{n}(2);
-    
+        
     % Stack of stars trajectory for 3D gridding
     if strcmpi(MR.Parameter.Scan.ScanMode,'3D') && MR.UMCParameters.IterativeReconstruction.SplitDimension~=3              
         if mod(dims{n}(3),2)>0 % is uneven
@@ -60,11 +60,29 @@ for n=1:num_data
         kn{n}(3,:,:,:,:,:,:,:,:,:,:)=repmat(permute(kz,[1 3 4 2]),repdim)*MR.Parameter.Gridder.OutputMatrixSize{n}(3);
     end
     
+    % Store traj
+    MR.Parameter.Gridder.Kpos{n}=kn{n};
+    
 end
 
-% Apply spatial resolution factor 
-MR.Parameter.Gridder.Kpos=cellfun(@(x) x*MR.UMCParameters.AdjointReconstruction.SpatialResolutionRatio,...
-    kn,'UniformOutput',false);
+% Crop k-space for lower resolution reconstruction 
+if ~isempty(MR.UMCParameters.AdjointReconstruction.SpatialResolutionRatio)
+    if max(MR.UMCParameters.AdjointReconstruction.SpatialResolutionRatio)>1
+        for n=1:numel(MR.Data)
+            % Determine cut-off samples
+            thresh=round(.5*dims{n}(1)*(1/MR.UMCParameters.AdjointReconstruction.SpatialResolutionRatio(1)));
+            
+            % Cut off data and trajectory
+            MR.Data{n}=MR.Data{n}(thresh+1:end-thresh,:,:,:,:,:,:,:,:,:,:,:);
+            MR.Parameter.Gridder.Kpos{n}=MR.Parameter.Gridder.Kpos{n}(:,thresh+1:end-thresh,:,:,:,:,:,:,:,:,:,:);
+            
+            % Scale trajectory with ratio
+            MR.Parameter.Gridder.Kpos{n}([1 2],:,:,:,:,:,:,:,:,:)=MR.Parameter.Gridder.Kpos{n}([1 2],:,:,:,:,:,:,:,:,:)*MR.UMCParameters.AdjointReconstruction.SpatialResolutionRatio(1);
+            MR.UMCParameters.AdjointReconstruction.KspaceSize{n}(1)=numel(thresh+1:dims{n}(1)-thresh);
+        end
+    end
+end
+
 
 % END
 end

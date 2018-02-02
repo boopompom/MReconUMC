@@ -46,13 +46,12 @@ for n=1:numel(MR.Data)
             csm=isp_reconframe_to_bart(dynamic_indexing(MR.Parameter.Recon.Sensitivities{n},rf_it_dim,p));
         end
 
-        tic
         % Do iterative reconstruction
         res=dynamic_indexing(res,bart_it_dim,p,bart(pics_call,...
             ktraj_reconframe_to_bart(dynamic_indexing(MR.Parameter.Gridder.Kpos{n},ktraj_it_dim,p)),...
             ksp_reconframe_to_bart(dynamic_indexing(MR.Data{n},rf_it_dim,p)),...
             csm));
-        toc
+        
         % Track progress
         parfor_progress;
     end

@@ -12,7 +12,7 @@ properties
     R % |Double| Acceleration factor
     RespiratorySorting % |YesNo|
     SoftGating % |YesNo| 
-    SpatialResolution % |Double| Reconstruction voxel size [mm], only for in-plane resolution
+    SpatialResolution % |Double| Reconstruction voxel size [mm]
 end
 
 %% Parameters that are extracted from PPE 
@@ -34,7 +34,7 @@ methods
         AR.KspaceSize=[]; % No input needed
         AR.PrototypeMode=0; % 1-dynamics
         AR.R=1; % Double [1-inf] , note this is not Nyquist R but Cartesian R 
-        AR.SpatialResolution=0; % Single double with resolution in [mm]
+        AR.SpatialResolution=''; % Single double with resolution in [mm]
         AR.SpatialResolutionRatio=[]; % No input needed
         AR.SoftGating='no';
         AR.SoftWeights=[];
