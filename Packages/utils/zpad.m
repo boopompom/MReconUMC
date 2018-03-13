@@ -1,4 +1,4 @@
-function res = zpad(x,sx,sy,sz,st)
+function res = zpad(x,sx,sy,sz,st,sdyn)
 %  res = zpad(x,sx,sy)
 %  Zero pads a 2D matrix around its center.
 %
@@ -33,29 +33,35 @@ if nargin == 5
     s = [sx,sy,sz,st];
 end
 
-    m = size(x);
-    if length(m) < length(s)
-	    m = [m, ones(1,length(s)-length(m))];
-    end
-	
-    if sum(m==s)==length(m)
-	res = x;
-	return;
-    end
+if nargin > 5
+    s = [sx,sy,sz,st,1,1,1,1,1,sdyn];
+end
 
-    res = zeros(s);
-    
-    for n=1:length(s)
-	    idx{n} = floor(s(n)/2)+1+ceil(-m(n)/2) : floor(s(n)/2)+ceil(m(n)/2);
-    end
+m = size(x);
+if length(m) < length(s)
+    m = [m, ones(1,length(s)-length(m))];
+end
 
-    % this is a dirty ugly trick
-    cmd = 'res(idx{1}';
-    for n=2:length(s)
-    	cmd = sprintf('%s,idx{%d}',cmd,n);
-    end
-    cmd = sprintf('%s)=x;',cmd);
-    eval(cmd);
+if sum(m==s)==length(m)
+res = x;
+return;
+end
+
+res = zeros(s);
+
+for n=1:length(s)
+    idx{n} = floor(s(n)/2)+1+ceil(-m(n)/2) : floor(s(n)/2)+ceil(m(n)/2);
+end
+
+% this is a dirty ugly trick
+cmd = 'res(idx{1}';
+for n=2:length(s)
+    cmd = sprintf('%s,idx{%d}',cmd,n);
+end
+cmd = sprintf('%s)=x;',cmd);
+eval(cmd);
+
+
 
 
 

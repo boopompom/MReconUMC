@@ -17,8 +17,7 @@ for n=1:num_data;cp{n}=dims{n}(1)/2+1;end % k0
 
 for n=1:num_data;    
     % Create a Ram-Lak filter
-    w{n}=ones(dims{n}(1),1);
-    w{n}=abs(MR.Parameter.Gridder.Kpos{n}(1,:,1,1,1,1,1,1,1,1,1,1));
+    w{n}=sum(abs(MR.Parameter.Gridder.Kpos{n}(:,:,1,1,1,1,1,1,1,1,1,1)),1);
     w{n}=w{n}/max(abs(w{n}(:)));
     w{n}(dims{n}(1)/2+1)=1/dims{n}(1);
     

@@ -20,7 +20,7 @@ if MR.Parameter.IsParameter('VAL01_ACQ_radial_golden_angle')==1;MR.UMCParameters
 if MR.Parameter.IsParameter('EX_ACQ_radial_density_of_angles')==1 && strcmpi(MR.Parameter.Scan.AcqMode,'Radial') && MR.UMCParameters.AdjointReconstruction.Goldenangle>0;MR.Parameter.Encoding.NrDyn=floor(MR.Parameter.GetValue('`EX_ACQ_radial_density_of_angles')/100);...
     if MR.Parameter.Encoding.NrDyn==0;MR.Parameter.Encoding.NrDyn=1;end;end
 
-
+MR.UMCParameters.AdjointReconstruction.Goldenangle=1;
 MR.Parameter.Encoding.NrDyn=1;
 
 % END

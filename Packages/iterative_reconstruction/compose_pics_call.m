@@ -3,7 +3,7 @@ function pics_call = compose_pics_call(MR)
 %
 % V20180129 - T.Bruijnen
 
-pics_call='pics -e ';
+pics_call='pics -S -d5 -u50   ';
 
 % Wavelet regularization
 if ~isempty(MR.UMCParameters.IterativeReconstruction.WaveletLambda)
@@ -16,7 +16,7 @@ if ~isempty(MR.UMCParameters.IterativeReconstruction.TVLambda)
     tv_idx=find(dim_reconframe_to_bart(MR.UMCParameters.IterativeReconstruction.TVLambda)>0);
     bm=@(x)(sum(2.^x));
    
-    pics_call=strcat(pics_call,[' -R T:',num2str(bm(tv_idx-1)),':0:',...
+    pics_call=strcat(pics_call,[' -RT:',num2str(bm(tv_idx-1)),':0:',...
         num2str(max(MR.UMCParameters.IterativeReconstruction.TVLambda))]);
 end
 
@@ -26,11 +26,12 @@ if ~isempty(MR.UMCParameters.IterativeReconstruction.MaxIterations)
 end
 
 % Potential function (l1/l2 wavelet)
-pics_call=strcat(pics_call,[' -l',num2str(MR.UMCParameters.IterativeReconstruction.PotentialFunction)]);
+%pics_call=strcat(pics_call,[' -l',num2str(MR.UMCParameters.IterativeReconstruction.PotentialFunction)]);
 
 % Add trajectory 
 if ~isempty(MR.Parameter.Gridder.Kpos)
     pics_call=strcat(pics_call,' -t');
 end
+
 % END
 end

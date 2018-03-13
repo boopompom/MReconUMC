@@ -17,12 +17,17 @@ if (strcmpi(MR.Parameter.Scan.ScanMode,'3D') && MR.UMCParameters.IterativeRecons
         MR.Data=cellfun(@(v) ifft(v,MR.UMCParameters.AdjointReconstruction.IspaceSize{1}(3),3),MR.Data,'UniformOutput',false); 
     end
     
+    for n=1:numel(MR.Data);MR.UMCParameters.AdjointReconstruction.KspaceSize{n}(3)=MR.UMCParameters.AdjointReconstruction.IspaceSize{n}(3);end
 	MR.Parameter.ReconFlags.isimspace=[0,0,1];     
 end
 
 % Radial phase correction functions
 radial_phasecorrection(MR);
 
+% Scale k-space data to kmax = 0.02
+for n=1:numel(MR.Data)
+    MR.Data{n}=MR.Data{n}/max(MR.Data{n}(:));
+end
 
 
 %END

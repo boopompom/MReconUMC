@@ -17,7 +17,9 @@ for c=1:nc
     end    
 end
 
-%% Moving average method
+%% Moving average method 
+% Note this can be any method, this is a very simple one.
+
 % Get mean navigator
 avg_nav=squeeze(mean(nav,1));
 

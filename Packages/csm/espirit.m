@@ -13,7 +13,7 @@ lowres_ksp=bart('fft -u 7', lowres_img);
 ksp_zerop=zpad(lowres_ksp,dims);
 
 % Calculate sense maps
-csm=bart('ecalib -t 0.005 -m1',ksp_zerop);
+csm=bart('ecalib -t 0.03 -m1',ksp_zerop);
 
 
 % END

@@ -38,7 +38,10 @@ for n=1:numel(MR.Data)
     parfor_progress(rf_Kd(rf_it_dim));
     
     for p=1:rf_Kd(rf_it_dim) % Loop over "partitions"
-        
+%         
+%          if p~=25
+%             continue;
+%          end
         if calc_csm
             csm=espirit(ktraj_reconframe_to_bart(dynamic_indexing(dynamic_to_spokes(MR.Parameter.Gridder.Kpos{n}),ktraj_it_dim,p)),...
                 ksp_reconframe_to_bart(dynamic_indexing(dynamic_to_spokes(MR.Data{n}),rf_it_dim,p)),esp_Id);
